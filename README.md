@@ -28,7 +28,6 @@
 ## Разработчик
 
 * GitHub: yataknemogy
-* Email: yataknemogy@icloud.com
 
 ## Лицензия
 
