@@ -28,7 +28,7 @@
 ## Разработчик
 
 * GitHub: yataknemogy
-* Email: insadeflight@icloud.com
+* Email: yataknemogy@icloud.com
 
 ## Лицензия
 
