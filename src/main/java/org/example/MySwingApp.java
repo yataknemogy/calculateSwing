@@ -1,18 +1,18 @@
 package org.example;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MySwingApp extends JFrame {
-    private JTextField display;
-    private JButton button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private JButton buttonAdd, buttonSubtract, buttonMultiply, buttonDivide, buttonEqual, buttonReset;
+    private final JTextField display;
+    private final JButton button0, button1, button2, button3, button4, button5, button6, button7, button8, button9;
+    private final JButton buttonAdd, buttonSubtract, buttonMultiply, buttonDivide, buttonEqual, buttonReset;
 
-    private double currentNumber = 0;
     private double result = 0;
-    private char operation = ' ';
+    private String expression = "";
     private boolean operationClicked = false;
 
     public MySwingApp() {
@@ -30,140 +30,106 @@ public class MySwingApp extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(4, 4, 5, 5));
 
-        button0 = new JButton("0");
-        button1 = new JButton("1");
-        button2 = new JButton("2");
-        button3 = new JButton("3");
-        button4 = new JButton("4");
-        button5 = new JButton("5");
-        button6 = new JButton("6");
-        button7 = new JButton("7");
-        button8 = new JButton("8");
-        button9 = new JButton("9");
+        // Создание кнопок с цифрами
+        button0 = createNumberButton("0");
+        button1 = createNumberButton("1");
+        button2 = createNumberButton("2");
+        button3 = createNumberButton("3");
+        button4 = createNumberButton("4");
+        button5 = createNumberButton("5");
+        button6 = createNumberButton("6");
+        button7 = createNumberButton("7");
+        button8 = createNumberButton("8");
+        button9 = createNumberButton("9");
 
-        buttonAdd = new JButton("+");
-        buttonSubtract = new JButton("-");
-        buttonMultiply = new JButton("*");
-        buttonDivide = new JButton("/");
-        buttonEqual = new JButton("=");
-        buttonReset = new JButton("Сброс");
+        // Создание кнопок для операций
+        buttonAdd = createOperationButton("+");
+        buttonSubtract = createOperationButton("-");
+        buttonMultiply = createOperationButton("*");
+        buttonDivide = createOperationButton("/");
+        buttonEqual = createEqualButton();
+        buttonReset = createResetButton();
 
-        button0.addActionListener(new NumberButtonListener());
-        button1.addActionListener(new NumberButtonListener());
-        button2.addActionListener(new NumberButtonListener());
-        button3.addActionListener(new NumberButtonListener());
-        button4.addActionListener(new NumberButtonListener());
-        button5.addActionListener(new NumberButtonListener());
-        button6.addActionListener(new NumberButtonListener());
-        button7.addActionListener(new NumberButtonListener());
-        button8.addActionListener(new NumberButtonListener());
-        button9.addActionListener(new NumberButtonListener());
-
-        buttonAdd.addActionListener(new OperationButtonListener('+'));
-        buttonSubtract.addActionListener(new OperationButtonListener('-'));
-        buttonMultiply.addActionListener(new OperationButtonListener('*'));
-        buttonDivide.addActionListener(new OperationButtonListener('/'));
-
-        buttonEqual.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calculateResult();
-                display.setText(Double.toString(result));
-                operationClicked = false;
-            }
-        });
-
-        buttonReset.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                resetCalculator();
-            }
-        });
-
-        buttonPanel.add(button1);
-        buttonPanel.add(button2);
-        buttonPanel.add(button3);
-        buttonPanel.add(buttonAdd);
-        buttonPanel.add(button4);
-        buttonPanel.add(button5);
-        buttonPanel.add(button6);
-        buttonPanel.add(buttonSubtract);
-        buttonPanel.add(button7);
-        buttonPanel.add(button8);
-        buttonPanel.add(button9);
-        buttonPanel.add(buttonMultiply);
-        buttonPanel.add(button0);
-        buttonPanel.add(buttonReset);
-        buttonPanel.add(buttonEqual);
-        buttonPanel.add(buttonDivide);
+        // Добавление кнопок в панель
+        addButtonsToPanel(buttonPanel, button1, button2, button3, buttonAdd,
+                button4, button5, button6, buttonSubtract,
+                button7, button8, button9, buttonMultiply,
+                button0, buttonReset, buttonEqual, buttonDivide);
 
         add(buttonPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
-    private class NumberButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JButton button = (JButton) e.getSource();
-            String buttonText = button.getText();
+    // Создание кнопки с цифрой
+    private JButton createNumberButton(String text) {
+        JButton button = new JButton(text);
+        button.addActionListener(e -> {
             if (operationClicked) {
                 display.setText("");
                 operationClicked = false;
             }
-            display.setText(display.getText() + buttonText);
-            currentNumber = Double.parseDouble(display.getText());
-        }
+            display.setText(display.getText() + text);
+            expression += text;
+        });
+        return button;
     }
 
-    private class OperationButtonListener implements ActionListener {
-        private char op;
-
-        public OperationButtonListener(char operation) {
-            this.op = operation;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
+    // Создание кнопки операции
+    private JButton createOperationButton(String text) {
+        JButton button = new JButton(text);
+        button.addActionListener(e -> {
             if (!operationClicked) {
-                if (operation != ' ') {
-                    calculateResult();
-                }
-                operation = op;
+                expression += " " + text + " ";
                 operationClicked = true;
-                display.setText("");
             }
+        });
+        return button;
+    }
+
+    // Создание кнопки равно
+    private JButton createEqualButton() {
+        JButton button = new JButton("=");
+        button.addActionListener(e -> {
+            calculateResult();
+            display.setText(Double.toString(result));
+            operationClicked = false;
+        });
+        return button;
+    }
+
+    // Создание кнопки сброса
+    private JButton createResetButton() {
+        JButton button = new JButton("Сброс");
+        button.addActionListener(e -> resetCalculator());
+        return button;
+    }
+
+    // Добавление кнопок в панель
+    private void addButtonsToPanel(JPanel panel, JButton... buttons) {
+        for (JButton button : buttons) {
+            panel.add(button);
         }
     }
 
+    // Вычисление результата выражения
     private void calculateResult() {
-        switch (operation) {
-            case '+':
-                result += currentNumber;
-                break;
-            case '-':
-                result -= currentNumber;
-                break;
-            case '*':
-                result *= currentNumber;
-                break;
-            case '/':
-                if (currentNumber != 0) {
-                    result /= currentNumber;
-                } else {
-                    display.setText("Error");
-                }
-                break;
-            default:
-                result = currentNumber;
-                break;
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("JavaScript");
+        try {
+            result = ((Number) engine.eval(expression)).doubleValue();
+        } catch (ScriptException e) {
+            display.setText("Error");
+            result = 0;
         }
     }
 
+
+    // Сброс калькулятора
     private void resetCalculator() {
-        currentNumber = 0;
+        double currentNumber = 0;
         result = 0;
-        operation = ' ';
+        expression = "";
         display.setText("");
         operationClicked = false;
     }
