@@ -25,11 +25,8 @@
 3. Введите второе число, нажав кнопки с цифрами.
 4. Нажмите кнопку "=", чтобы увидеть результат операции.
 
-## Разработчик
-
-* GitHub: yataknemogy
-* Email: yataknemogy@icloud.com
-
 ## Лицензия
 
 Этот проект лицензирован под лицензией MIT - подробности см. в файле LICENSE.
+
+[EN](docs/README_EN.MD) | [JP](docs/README_JP.MD) | [DE](docs/README_DE.MD)
